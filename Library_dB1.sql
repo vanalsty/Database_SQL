@@ -98,6 +98,15 @@ INSERT INTO tbl_Book_Copies
 	(6,6,2)	
 ;
 
+INSERT INTO tbl_Book_Copies
+	(BranchID, BookID, Number_of_Copies)
+	VALUES
+	(2,1,2),
+	(3,1,7),
+	(4,1,4),
+	(6,1,5)
+;
+
 SELECT * FROM tbl_Book_Copies
 
 CREATE TABLE tbl_Book_Loans (
@@ -239,9 +248,44 @@ INNER JOIN tbl_Book_Authors ON tbl_Books.BookID = tbl_Book_Authors.BookID;
 
 
 
-/*How many copies of the book titled "The Lost Tribe" are owned by the library branch whose name is "Sharpstown"?*/
+/*How many copies of the book titled "The Lost Tribe" are owned by the library branch whose name is "Sharpstown"? */
+
+
+CREATE PROCEDURE TitleBranch
+AS
+BEGIN
+	SELECT tbl_Books.Title, tbl_Book_Copies.Number_of_Copies, tbl_LibraryBranch.BranchName
+	FROM tbl_Books
+	INNER JOIN tbl_Book_Copies ON tbl_Books.BookID = tbl_Book_Copies.BookID
+	INNER JOIN tbl_LibraryBranch ON tbl_LibraryBranch.BranchID = tbl_Book_Copies.BranchID
+	WHERE Title= 'The Lost Tribe' AND BranchName= 'Sharpstown'
+END;
+
+EXEC TitleBranch
 
 
 /*How many copies of the book titled "The Lost Tribe" are owned by each library branch?*/
+CREATE PROCEDURE LostTribe
+AS
+BEGIN
+	SELECT tbl_Books.Title, tbl_Book_Copies.Number_of_Copies, tbl_LibraryBranch.BranchName
+	FROM tbl_Books
+	INNER JOIN tbl_Book_Copies ON tbl_Books.BookID = tbl_Book_Copies.BookID
+	INNER JOIN tbl_LibraryBranch ON tbl_LibraryBranch.BranchID = tbl_Book_Copies.BranchID
+	WHERE Title= 'The Lost Tribe'
+END;
+
+EXEC LostTribe
 
 /*Retrieve the names of all borrowers who do not have any books checked out.*/
+
+CREATE PROCEDURE NoCheckout
+AS
+BEGIN
+Select tbl_Borrower.BorrowerName
+FROM tbl_Borrower
+LEFT JOIN tbl_Book_Loans ON tbl_Borrower.CardNo = tbl_Book_Loans.CardNo
+WHERE tbl_Book_Loans.CardNo IS NULL
+END;
+
+EXEC NoCheckout
